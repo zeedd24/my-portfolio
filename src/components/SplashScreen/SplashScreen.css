@@ -1,0 +1,108 @@
+.splash-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: #0b090a; /* Dark background matching the page theme */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 99999; /* Ensure it stays above everything */
+  overflow: hidden;
+}
+
+.splash-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(244, 63, 94, 0.15) 0%, transparent 70%);
+  filter: blur(40px);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.splash-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.splash-branding {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Outfit', 'Inter', sans-serif;
+  font-size: 3.5rem;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+  color: #ffffff;
+  text-transform: uppercase;
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+  margin-bottom: 10px;
+}
+
+.splash-char {
+  display: inline-block;
+  background: linear-gradient(135deg, #ffffff 40%, rgba(255, 255, 255, 0.7) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.splash-space {
+  width: 1.2rem;
+}
+
+.splash-subtitle {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 500;
+  letter-spacing: 0.5em;
+  color: #f43f5e; /* Matching the rose theme */
+  text-transform: uppercase;
+  margin-top: 10px;
+  margin-bottom: 40px;
+  opacity: 0.8;
+}
+
+.splash-loader-bar {
+  width: 240px;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+
+.splash-loader-progress {
+  height: 100%;
+  background: linear-gradient(90deg, #f43f5e, #fda4af); /* Premium rose gradient */
+  box-shadow: 0 0 10px rgba(244, 63, 94, 0.5);
+  width: 0%;
+}
+
+@media (max-width: 768px) {
+  .splash-branding {
+    font-size: 2.2rem;
+    letter-spacing: 0.1em;
+  }
+  .splash-space {
+    width: 0.8rem;
+  }
+  .splash-subtitle {
+    font-size: 0.75rem;
+    letter-spacing: 0.4em;
+  }
+  .splash-loader-bar {
+    width: 180px;
+  }
+}
