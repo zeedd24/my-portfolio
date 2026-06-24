@@ -1,0 +1,285 @@
+/* =============================================
+   CARD SWAP ROOT (wrapper including nav)
+   ============================================= */
+.card-swap-root {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  overflow: visible;
+}
+
+/* =============================================
+   CARD SWAP CONTAINER
+   ============================================= */
+.card-swap-container {
+  position: relative;
+  perspective: 1200px;
+  overflow: visible;
+  flex-shrink: 0;
+}
+
+/* =============================================
+   INDIVIDUAL CARD BASE STYLES
+   ============================================= */
+.card {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+
+  /* Premium dark glass look */
+  border-radius: 20px;
+  border: 1px solid rgba(244, 63, 94, 0.22);
+  background: rgba(14, 14, 20, 0.88);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  box-shadow:
+    0 10px 40px rgba(0, 0, 0, 0.55),
+    0 0 0 1px rgba(255, 255, 255, 0.03),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+
+  transform-style: preserve-3d;
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+
+  cursor: pointer;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  border-color: rgba(244, 63, 94, 0.55);
+  box-shadow:
+    0 20px 50px rgba(244, 63, 94, 0.15),
+    0 0 30px rgba(244, 63, 94, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+/* =============================================
+   CARD INNER STRUCTURE
+   ============================================= */
+.card-banner {
+  width: 100%;
+  height: 52%;
+  overflow: hidden;
+  position: relative;
+  flex-shrink: 0;
+  border-bottom: 1px solid rgba(244, 63, 94, 0.12);
+}
+
+.card-banner img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+
+.card:hover .card-banner img {
+  transform: scale(1.07);
+}
+
+/* Gradient fade at bottom of banner */
+.card-banner-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, transparent 30%, rgba(10, 10, 14, 0.9));
+  pointer-events: none;
+}
+
+/* When no image: fill top region with subtle gradient */
+.card:not(:has(.card-banner)) .card-body {
+  padding-top: 32px;
+}
+
+.card-body {
+  padding: 18px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  justify-content: space-between;
+  position: relative;
+  z-index: 1;
+}
+
+/* Gradient shimmer line at top of body */
+.card-body::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 20px;
+  right: 20px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(244, 63, 94, 0.3), transparent);
+  pointer-events: none;
+}
+
+.card-body h3 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  color: #f1f5f9;
+  margin: 0 0 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-body p {
+  font-size: 0.82rem;
+  color: #94a3b8;
+  line-height: 1.5;
+  margin: 0 0 12px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-grow: 1;
+}
+
+/* Footer row: tech badges + action hint */
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+  gap: 8px;
+}
+
+.card-tech-badges {
+  display: flex;
+  gap: 5px;
+  flex-wrap: nowrap;
+  overflow: hidden;
+}
+
+.card-tech-tag {
+  font-size: 0.68rem;
+  font-weight: 600;
+  background: rgba(244, 63, 94, 0.1);
+  color: #ff4d6a;
+  border: 1px solid rgba(244, 63, 94, 0.2);
+  padding: 3px 8px;
+  border-radius: 999px;
+  white-space: nowrap;
+  letter-spacing: 0.02em;
+}
+
+.card-action-hint {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #ff4d6a;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  opacity: 0.75;
+  transition: opacity 0.2s;
+}
+
+.card:hover .card-action-hint {
+  opacity: 1;
+}
+
+/* =============================================
+   RESPONSIVE
+   ============================================= */
+@media (max-width: 768px) {
+  .card-swap-container {
+    transform: scale(0.82);
+    transform-origin: top center;
+  }
+}
+
+@media (max-width: 480px) {
+  .card-swap-container {
+    transform: scale(0.62);
+    transform-origin: top center;
+  }
+}
+
+/* =============================================
+   NAV BAR  (Prev / Dots / Next)
+   ============================================= */
+.card-swap-nav {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 28px;
+  /* vertically below the card stack */
+  position: relative;
+  z-index: 10;
+}
+
+/* Arrow buttons */
+.cs-nav-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid rgba(244, 63, 94, 0.3);
+  background: rgba(244, 63, 94, 0.06);
+  color: #ff4d6a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+  flex-shrink: 0;
+}
+
+.cs-nav-btn svg {
+  width: 18px;
+  height: 18px;
+  display: block;
+}
+
+.cs-nav-btn:hover {
+  background: rgba(244, 63, 94, 0.18);
+  border-color: rgba(244, 63, 94, 0.6);
+  transform: scale(1.08);
+  box-shadow: 0 0 14px rgba(244, 63, 94, 0.25);
+}
+
+.cs-nav-btn:active {
+  transform: scale(0.93);
+}
+
+/* Dot indicators */
+.cs-nav-dots {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.cs-nav-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(244, 63, 94, 0.2);
+  display: inline-block;
+  transition: background 0.3s, transform 0.3s;
+}
+
+/* first dot = front card = active */
+.cs-nav-dot:first-child {
+  background: #ff4d6a;
+  transform: scale(1.3);
+  box-shadow: 0 0 8px rgba(244, 63, 94, 0.5);
+}
+
+@media (max-width: 768px) {
+  .cs-nav-btn {
+    width: 34px;
+    height: 34px;
+  }
+  .cs-nav-btn svg {
+    width: 15px;
+    height: 15px;
+  }
+}

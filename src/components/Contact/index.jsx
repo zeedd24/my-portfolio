@@ -1,7 +1,10 @@
 import { useContext, useState } from "react"
 import { motion } from "framer-motion"
 import PortfolioContext from "../../context/PortfolioContext"
-import { FaEnvelope, FaMapMarkerAlt, FaPaperPlane, FaPhone } from "react-icons/fa"
+import {
+  FaEnvelope, FaMapMarkerAlt, FaPaperPlane, FaPhone,
+  FaGithub, FaLinkedin, FaInstagram, FaComments
+} from "react-icons/fa"
 
 const Contact = () => {
   const { data } = useContext(PortfolioContext)
@@ -29,10 +32,16 @@ const Contact = () => {
   }
 
   const contactItems = [
-    { icon: FaEnvelope, label: "Email", value: profile.email || "ahmad.zidane@gmail.com" },
-    { icon: FaPhone, label: "Phone / WhatsApp", value: profile.phone || "+62 812-3456-7890" },
-    { icon: FaMapMarkerAlt, label: "Location", value: profile.location || "Medan, Indonesia" },
+    { icon: FaEnvelope, label: "Email", value: profile?.email || "ahmad.zidane@gmail.com" },
+    { icon: FaPhone, label: "Phone / WhatsApp", value: profile?.phone || "+62 812-3456-7890" },
+    { icon: FaMapMarkerAlt, label: "Location", value: profile?.location || "Medan, Indonesia" },
   ]
+
+  const socialLinks = [
+    { icon: FaGithub, url: profile?.github, label: "GitHub" },
+    { icon: FaLinkedin, url: profile?.linkedin, label: "LinkedIn" },
+    { icon: FaInstagram, url: profile?.instagram, label: "Instagram" },
+  ].filter((link) => link.url)
 
   const listVariants = {
     hidden: { opacity: 0 },
@@ -53,7 +62,10 @@ const Contact = () => {
 
   return (
     <section id="contact" className="section section-glow">
-      <div className="container">
+      <div className="glow-blob glow-blob-3" style={{ bottom: "-80px", top: "auto", left: "10%" }} />
+      <div className="dot-grid-bg" />
+
+      <div className="container" style={{ position: "relative", zIndex: 1 }}>
         <div className="section-header">
           <motion.h2
             className="section-title"
@@ -64,18 +76,37 @@ const Contact = () => {
           >
             Contact Me
           </motion.h2>
+          <motion.p
+            className="section-subtitle"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            Get in touch! Fill out the form or connect through my social profiles.
+          </motion.p>
         </div>
-        <div className="contact-grid">
 
+        <div className="contact-grid">
+          {/* Left card: Info & Socials */}
           <motion.div
             className="glass-card contact-card"
-            initial={{ opacity: 0, x: -30 }}
+            initial={{ opacity: 0, x: -40 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, amount: 0.15 }}
             transition={{ type: "spring", damping: 15, stiffness: 85 }}
           >
-            <h3>Let's Connect!</h3>
-            <p>
+            <div className="contact-card-header">
+              <div className="contact-card-icon">
+                <FaComments />
+              </div>
+              <div>
+                <h3>Let's Connect!</h3>
+                <p className="contact-card-subtitle">Open for opportunities &amp; discussions</p>
+              </div>
+            </div>
+
+            <p style={{ marginBottom: "25px", lineHeight: "1.7" }}>
               Feel free to contact me if you have any questions, project offers, collaborations, or simply want to discuss IT topics.
             </p>
 
@@ -88,7 +119,9 @@ const Contact = () => {
             >
               {contactItems.map(({ icon: Icon, label, value }) => (
                 <motion.div key={label} className="contact-info-item" variants={itemVariants}>
-                  <div className="contact-info-icon"><Icon /></div>
+                  <div className="contact-info-icon">
+                    <Icon />
+                  </div>
                   <div className="contact-info-text">
                     <h4>{label}</h4>
                     <p>{value}</p>
@@ -96,20 +129,47 @@ const Contact = () => {
                 </motion.div>
               ))}
             </motion.div>
+
+            {/* Social profiles row */}
+            {socialLinks.length > 0 && (
+              <div className="contact-social-row">
+                {socialLinks.map(({ icon: Icon, url, label }) => (
+                  <a
+                    key={label}
+                    href={url.startsWith("http") ? url : `https://${url}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="contact-social-btn"
+                    title={label}
+                  >
+                    <Icon /> {label}
+                  </a>
+                ))}
+              </div>
+            )}
           </motion.div>
 
+          {/* Right card: Contact form */}
           <motion.div
             className="glass-card contact-card"
-            initial={{ opacity: 0, x: 30 }}
+            initial={{ opacity: 0, x: 40 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, amount: 0.15 }}
             transition={{ type: "spring", damping: 15, stiffness: 85, delay: 0.1 }}
           >
-            <h3>Send Message</h3>
+            <div className="contact-card-header">
+              <div className="contact-card-icon">
+                <FaPaperPlane />
+              </div>
+              <div>
+                <h3>Send Message</h3>
+                <p className="contact-card-subtitle">I will reply as soon as possible</p>
+              </div>
+            </div>
+
             {success && (
               <motion.div
-                className="error-message"
-                style={{ background: "rgba(16, 185, 129, 0.1)", borderColor: "rgba(16, 185, 129, 0.2)", color: "var(--color-success)" }}
+                className="contact-success"
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
@@ -117,6 +177,7 @@ const Contact = () => {
                 Your message has been sent successfully! Thank you for reaching out.
               </motion.div>
             )}
+
             <form onSubmit={handleSubmit} className="admin-form">
               <div className="form-group">
                 <label htmlFor="name">Full Name</label>
@@ -152,7 +213,7 @@ const Contact = () => {
               </div>
               <motion.button
                 type="submit"
-                className="btn-primary"
+                className="btn-primary contact-submit-btn"
                 whileHover={{ scale: 1.02, y: -2 }}
                 whileTap={{ scale: 0.98 }}
               >
@@ -160,7 +221,6 @@ const Contact = () => {
               </motion.button>
             </form>
           </motion.div>
-
         </div>
       </div>
     </section>
