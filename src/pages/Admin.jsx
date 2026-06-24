@@ -1,26 +1,30 @@
-import { useContext, useState } from "react"
+import { useContext, useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import PortfolioContext from "../context/PortfolioContext"
 import Navbar from "../components/Navbar"
 import Footer from "../components/Footer"
 import { 
   FaUser, FaTools, FaFolderOpen, FaBriefcase, FaAward, 
-  FaPlus, FaTrash, FaSave, FaSignOutAlt, FaUpload, FaSpinner, FaImage 
+  FaPlus, FaTrash, FaSave, FaSignOutAlt, FaUpload, FaSpinner, FaImage, FaEdit, FaTimes 
 } from "react-icons/fa"
 import { uploadPhoto } from "../utils/supabase"
+import { SKILL_CATEGORIES, getSkillsByCategory, resolveSelectedSkills, migrateSkills } from "../data/skillCatalog"
+import SkillIcon from "../components/Skills/SkillIcon"
 
 const Admin = () => {
   const { 
     data, 
     updateProfile, 
-    addSkill, 
-    deleteSkill, 
+    toggleSkill,
     addProject, 
-    deleteProject, 
+    deleteProject,
+    updateProject,
     addExperience, 
-    deleteExperience, 
+    deleteExperience,
+    updateExperience,
     addCertificate, 
     deleteCertificate,
+    updateCertificate,
     logout 
   } = useContext(PortfolioContext)
 
@@ -33,42 +37,34 @@ const Admin = () => {
     name: data.profile?.name || "",
     role: data.profile?.role || "",
     email: data.profile?.email || "",
+    phone: data.profile?.phone || "",
+    location: data.profile?.location || "",
     bio: data.profile?.bio || "",
-    photoUrl: data.profile?.photoUrl || ""
+    photoUrl: data.profile?.photoUrl || "",
+    github: data.profile?.github || "",
+    linkedin: data.profile?.linkedin || "",
+    instagram: data.profile?.instagram || ""
   })
   const [profileSavedMsg, setProfileSavedMsg] = useState(false)
   const [profileUploading, setProfileUploading] = useState(false)
   const [profileError, setProfileError] = useState("")
 
-  // Skill
-  const [newSkill, setNewSkill] = useState("")
-
   // Project
-  const [newProject, setNewProject] = useState({
-    title: "",
-    description: "",
-    tech: "",
-    link: "",
-    imageUrl: ""
-  })
+  const emptyProject = { title: "", description: "", tech: "", link: "", imageUrl: "" }
+  const [projectForm, setProjectForm] = useState(emptyProject)
+  const [editingProjectId, setEditingProjectId] = useState(null)
   const [projectUploading, setProjectUploading] = useState(false)
   const [projectError, setProjectError] = useState("")
 
   // Experience
-  const [newExperience, setNewExperience] = useState({
-    title: "",
-    place: "",
-    year: "",
-    description: ""
-  })
+  const emptyExperience = { title: "", place: "", year: "", description: "" }
+  const [experienceForm, setExperienceForm] = useState(emptyExperience)
+  const [editingExperienceId, setEditingExperienceId] = useState(null)
 
   // Certificate
-  const [newCertificate, setNewCertificate] = useState({
-    title: "",
-    issuer: "",
-    year: "",
-    link: ""
-  })
+  const emptyCertificate = { title: "", issuer: "", year: "", link: "" }
+  const [certificateForm, setCertificateForm] = useState(emptyCertificate)
+  const [editingCertificateId, setEditingCertificateId] = useState(null)
 
   // --- Submit handlers ---
   const handleProfileSave = (e) => {
@@ -76,13 +72,6 @@ const Admin = () => {
     updateProfile(profileForm)
     setProfileSavedMsg(true)
     setTimeout(() => setProfileSavedMsg(false), 3000)
-  }
-
-  const handleAddSkill = (e) => {
-    e.preventDefault()
-    if (!newSkill.trim()) return
-    addSkill(newSkill)
-    setNewSkill("")
   }
 
   const handleProfilePhotoUpload = async (e) => {
@@ -110,7 +99,7 @@ const Admin = () => {
       setProjectUploading(true)
       setProjectError("")
       const publicUrl = await uploadPhoto(file)
-      setNewProject(prev => ({ ...prev, imageUrl: publicUrl }))
+      setProjectForm(prev => ({ ...prev, imageUrl: publicUrl }))
     } catch (err) {
       console.error(err)
       setProjectError(err.message || "Failed to upload image")
@@ -119,31 +108,104 @@ const Admin = () => {
     }
   }
 
-  const handleAddProject = (e) => {
-    e.preventDefault()
-    if (!newProject.title.trim()) return
-    addProject(newProject)
-    setNewProject({ title: "", description: "", tech: "", link: "", imageUrl: "" })
+  const resetProjectForm = () => {
+    setProjectForm(emptyProject)
+    setEditingProjectId(null)
+    setProjectError("")
   }
 
-  const handleAddExperience = (e) => {
-    e.preventDefault()
-    if (!newExperience.title.trim()) return
-    addExperience(newExperience)
-    setNewExperience({ title: "", place: "", year: "", description: "" })
+  const startEditProject = (project) => {
+    setProjectForm({
+      title: project.title || "",
+      description: project.description || "",
+      tech: project.tech || "",
+      link: project.link || "",
+      imageUrl: project.imageUrl || ""
+    })
+    setEditingProjectId(project.id)
+    setProjectError("")
   }
 
-  const handleAddCertificate = (e) => {
+  const handleProjectSubmit = (e) => {
     e.preventDefault()
-    if (!newCertificate.title.trim()) return
-    addCertificate(newCertificate)
-    setNewCertificate({ title: "", issuer: "", year: "", link: "" })
+    if (!projectForm.title.trim()) return
+    if (editingProjectId) {
+      updateProject(editingProjectId, projectForm)
+    } else {
+      addProject(projectForm)
+    }
+    resetProjectForm()
+  }
+
+  const resetExperienceForm = () => {
+    setExperienceForm(emptyExperience)
+    setEditingExperienceId(null)
+  }
+
+  const startEditExperience = (experience) => {
+    setExperienceForm({
+      title: experience.title || "",
+      place: experience.place || "",
+      year: experience.year || "",
+      description: experience.description || ""
+    })
+    setEditingExperienceId(experience.id)
+  }
+
+  const handleExperienceSubmit = (e) => {
+    e.preventDefault()
+    if (!experienceForm.title.trim()) return
+    if (editingExperienceId) {
+      updateExperience(editingExperienceId, experienceForm)
+    } else {
+      addExperience(experienceForm)
+    }
+    resetExperienceForm()
+  }
+
+  const resetCertificateForm = () => {
+    setCertificateForm(emptyCertificate)
+    setEditingCertificateId(null)
+  }
+
+  const startEditCertificate = (certificate) => {
+    setCertificateForm({
+      title: certificate.title || "",
+      issuer: certificate.issuer || "",
+      year: certificate.year || "",
+      link: certificate.link || ""
+    })
+    setEditingCertificateId(certificate.id)
+  }
+
+  const handleCertificateSubmit = (e) => {
+    e.preventDefault()
+    if (!certificateForm.title.trim()) return
+    if (editingCertificateId) {
+      updateCertificate(editingCertificateId, certificateForm)
+    } else {
+      addCertificate(certificateForm)
+    }
+    resetCertificateForm()
   }
 
   const handleLogout = () => {
     logout()
     navigate("/")
   }
+
+  useEffect(() => {
+    setProjectForm(emptyProject)
+    setEditingProjectId(null)
+    setProjectError("")
+    setExperienceForm(emptyExperience)
+    setEditingExperienceId(null)
+    setCertificateForm(emptyCertificate)
+    setEditingCertificateId(null)
+  }, [activeTab])
+
+  const selectedSkills = resolveSelectedSkills(data.skills)
+  const selectedSkillIds = migrateSkills(data.skills)
 
   return (
     <div className="admin-container">
@@ -284,6 +346,28 @@ const Admin = () => {
                       required
                     />
                   </div>
+                  <div className="form-row">
+                    <div className="form-group">
+                      <label htmlFor="admin-phone">Phone / WhatsApp</label>
+                      <input 
+                        type="text" 
+                        id="admin-phone"
+                        value={profileForm.phone}
+                        onChange={(e) => setProfileForm({ ...profileForm, phone: e.target.value })}
+                        placeholder="+62 812-xxxx-xxxx"
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label htmlFor="admin-location">Location</label>
+                      <input 
+                        type="text" 
+                        id="admin-location"
+                        value={profileForm.location}
+                        onChange={(e) => setProfileForm({ ...profileForm, location: e.target.value })}
+                        placeholder="City, Country"
+                      />
+                    </div>
+                  </div>
                   <div className="form-group">
                     <label htmlFor="admin-bio">Short Biography / Description</label>
                     <textarea 
@@ -292,6 +376,38 @@ const Admin = () => {
                       onChange={(e) => setProfileForm({ ...profileForm, bio: e.target.value })}
                       required
                     ></textarea>
+                  </div>
+                  <div className="form-row">
+                    <div className="form-group">
+                      <label htmlFor="admin-github">GitHub URL</label>
+                      <input 
+                        type="url" 
+                        id="admin-github"
+                        value={profileForm.github}
+                        onChange={(e) => setProfileForm({ ...profileForm, github: e.target.value })}
+                        placeholder="https://github.com/username"
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label htmlFor="admin-linkedin">LinkedIn URL</label>
+                      <input 
+                        type="url" 
+                        id="admin-linkedin"
+                        value={profileForm.linkedin}
+                        onChange={(e) => setProfileForm({ ...profileForm, linkedin: e.target.value })}
+                        placeholder="https://linkedin.com/in/username"
+                      />
+                    </div>
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="admin-instagram">Instagram URL</label>
+                    <input 
+                      type="url" 
+                      id="admin-instagram"
+                      value={profileForm.instagram}
+                      onChange={(e) => setProfileForm({ ...profileForm, instagram: e.target.value })}
+                      placeholder="https://instagram.com/username"
+                    />
                   </div>
                   <button type="submit" className="btn-primary" style={{ marginTop: "10px" }}>
                     <FaSave /> Save Changes
@@ -305,37 +421,61 @@ const Admin = () => {
               <div>
                 <div className="admin-content-header">
                   <h2>Manage Skills &amp; Expertise</h2>
+                  <p style={{ color: "var(--text-muted)", fontSize: "0.9rem", marginTop: "8px" }}>
+                    Pilih skill dari daftar di bawah. Icon akan tampil dengan warna brand asli di website.
+                  </p>
                 </div>
-                <form onSubmit={handleAddSkill} className="admin-form" style={{ display: "flex", flexDirection: "row", gap: "10px", alignItems: "flex-end" }}>
-                  <div className="form-group" style={{ flexGrow: 1, marginBottom: 0 }}>
-                    <label htmlFor="admin-skill-name">Add New Skill</label>
-                    <input 
-                      type="text" 
-                      id="admin-skill-name"
-                      placeholder="e.g. React.js, Python, Git..."
-                      value={newSkill}
-                      onChange={(e) => setNewSkill(e.target.value)}
-                      required
-                    />
-                  </div>
-                  <button type="submit" className="btn-primary" style={{ height: "45px" }}>
-                    <FaPlus /> Add
-                  </button>
-                </form>
+
+                <div className="skill-picker">
+                  {SKILL_CATEGORIES.map((category) => {
+                    const categorySkills = getSkillsByCategory(category)
+                    if (categorySkills.length === 0) return null
+
+                    return (
+                      <div key={category} className="skill-picker-category">
+                        <h3>{category}</h3>
+                        <div className="skill-picker-grid">
+                          {categorySkills.map((skill) => {
+                            const isSelected = selectedSkillIds.includes(skill.id)
+
+                            return (
+                              <label
+                                key={skill.id}
+                                className={`skill-picker-item glass-card ${isSelected ? "selected" : ""}`}
+                              >
+                                <input
+                                  type="checkbox"
+                                  checked={Boolean(isSelected)}
+                                  onChange={() => toggleSkill(skill.id)}
+                                />
+                                <SkillIcon skillId={skill.id} size="1.5rem" />
+                                <span>{skill.name}</span>
+                              </label>
+                            )
+                          })}
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
 
                 <div className="admin-list-section">
-                  <h3>Current Skill List</h3>
-                  {(!data.skills || data.skills.length === 0) ? (
-                    <p style={{ color: "var(--text-muted)", fontStyle: "italic" }}>No skills added yet.</p>
+                  <h3>Selected Skills ({selectedSkills.length})</h3>
+                  {selectedSkills.length === 0 ? (
+                    <p style={{ color: "var(--text-muted)", fontStyle: "italic" }}>Belum ada skill yang dipilih.</p>
                   ) : (
-                    <div className="admin-table-list">
-                      {data.skills.map((skill) => (
-                        <div key={skill.id} className="admin-table-item">
-                          <div className="admin-table-item-info">
-                            <h4>{skill.name}</h4>
-                          </div>
-                          <button onClick={() => deleteSkill(skill.id)} className="btn-danger">
-                            <FaTrash /> Delete
+                    <div className="skill-selected-list">
+                      {selectedSkills.map((skill) => (
+                        <div key={skill.id} className="skill-selected-chip">
+                          <SkillIcon skillId={skill.id} size="1.2rem" />
+                          <span>{skill.name}</span>
+                          <button
+                            type="button"
+                            onClick={() => toggleSkill(skill.id)}
+                            className="skill-selected-remove"
+                            title={`Remove ${skill.name}`}
+                          >
+                            <FaTimes />
                           </button>
                         </div>
                       ))}
@@ -351,15 +491,20 @@ const Admin = () => {
                 <div className="admin-content-header">
                   <h2>Manage Projects</h2>
                 </div>
-                <form onSubmit={handleAddProject} className="admin-form">
+                <form onSubmit={handleProjectSubmit} className="admin-form">
+                  {editingProjectId && (
+                    <div className="error-message" style={{ background: "rgba(244, 63, 94, 0.1)", borderColor: "rgba(244, 63, 94, 0.2)", color: "var(--color-accent)" }}>
+                      Editing project — make changes and click Save Changes, or Cancel to discard.
+                    </div>
+                  )}
                   <div className="form-group">
                     <label htmlFor="project-title">Project Title</label>
                     <input 
                       type="text" 
                       id="project-title"
                       placeholder="Your project name..."
-                      value={newProject.title}
-                      onChange={(e) => setNewProject({ ...newProject, title: e.target.value })}
+                      value={projectForm.title}
+                      onChange={(e) => setProjectForm({ ...projectForm, title: e.target.value })}
                       required
                     />
                   </div>
@@ -368,8 +513,8 @@ const Admin = () => {
                     <textarea 
                       id="project-desc"
                       placeholder="Short project explanation..."
-                      value={newProject.description}
-                      onChange={(e) => setNewProject({ ...newProject, description: e.target.value })}
+                      value={projectForm.description}
+                      onChange={(e) => setProjectForm({ ...projectForm, description: e.target.value })}
                       required
                     ></textarea>
                   </div>
@@ -380,8 +525,8 @@ const Admin = () => {
                         type="text" 
                         id="project-tech"
                         placeholder="e.g. React, CSS, Node.js"
-                        value={newProject.tech}
-                        onChange={(e) => setNewProject({ ...newProject, tech: e.target.value })}
+                        value={projectForm.tech}
+                        onChange={(e) => setProjectForm({ ...projectForm, tech: e.target.value })}
                       />
                     </div>
                     <div className="form-group">
@@ -390,8 +535,8 @@ const Admin = () => {
                         type="text" 
                         id="project-link"
                         placeholder="github.com/username/project"
-                        value={newProject.link}
-                        onChange={(e) => setNewProject({ ...newProject, link: e.target.value })}
+                        value={projectForm.link}
+                        onChange={(e) => setProjectForm({ ...projectForm, link: e.target.value })}
                       />
                     </div>
                   </div>
@@ -409,8 +554,8 @@ const Admin = () => {
                         alignItems: "center",
                         justifyContent: "center"
                       }}>
-                        {newProject.imageUrl ? (
-                          <img src={newProject.imageUrl} alt="Project Preview" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                        {projectForm.imageUrl ? (
+                          <img src={projectForm.imageUrl} alt="Project Preview" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                         ) : (
                           <div style={{ color: "var(--text-muted)", fontSize: "1.5rem" }}><FaImage /></div>
                         )}
@@ -432,9 +577,16 @@ const Admin = () => {
                       </div>
                     </div>
                   </div>
-                  <button type="submit" className="btn-primary" style={{ marginTop: "10px" }}>
-                    <FaPlus /> Add Project
-                  </button>
+                  <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
+                    <button type="submit" className="btn-primary">
+                      {editingProjectId ? <><FaSave /> Save Changes</> : <><FaPlus /> Add Project</>}
+                    </button>
+                    {editingProjectId && (
+                      <button type="button" onClick={resetProjectForm} className="btn-secondary">
+                        <FaTimes /> Cancel
+                      </button>
+                    )}
+                  </div>
                 </form>
 
                 <div className="admin-list-section">
@@ -452,9 +604,14 @@ const Admin = () => {
                             <h4>{proj.title}</h4>
                             <p style={{ color: "var(--text-muted)", fontSize: "0.8rem" }}>{proj.tech || "No technologies listed"}</p>
                           </div>
-                          <button onClick={() => deleteProject(proj.id)} className="btn-danger">
-                            <FaTrash /> Delete
-                          </button>
+                          <div className="admin-table-actions">
+                            <button onClick={() => startEditProject(proj)} className="btn-secondary" style={{ padding: "8px 16px", fontSize: "0.85rem" }}>
+                              <FaEdit /> Edit
+                            </button>
+                            <button onClick={() => deleteProject(proj.id)} className="btn-danger">
+                              <FaTrash /> Delete
+                            </button>
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -469,15 +626,20 @@ const Admin = () => {
                 <div className="admin-content-header">
                   <h2>Manage Experience</h2>
                 </div>
-                <form onSubmit={handleAddExperience} className="admin-form">
+                <form onSubmit={handleExperienceSubmit} className="admin-form">
+                  {editingExperienceId && (
+                    <div className="error-message" style={{ background: "rgba(244, 63, 94, 0.1)", borderColor: "rgba(244, 63, 94, 0.2)", color: "var(--color-accent)" }}>
+                      Editing experience — make changes and click Save Changes, or Cancel to discard.
+                    </div>
+                  )}
                   <div className="form-group">
                     <label htmlFor="exp-title">Role / Title</label>
                     <input 
                       type="text" 
                       id="exp-title"
                       placeholder="e.g. Student Association President, Teaching Assistant, Web Developer Intern..."
-                      value={newExperience.title}
-                      onChange={(e) => setNewExperience({ ...newExperience, title: e.target.value })}
+                      value={experienceForm.title}
+                      onChange={(e) => setExperienceForm({ ...experienceForm, title: e.target.value })}
                       required
                     />
                   </div>
@@ -488,8 +650,8 @@ const Admin = () => {
                         type="text" 
                         id="exp-place"
                         placeholder="e.g. Universitas Gadjah Mada, PT Tokopedia..."
-                        value={newExperience.place}
-                        onChange={(e) => setNewExperience({ ...newExperience, place: e.target.value })}
+                        value={experienceForm.place}
+                        onChange={(e) => setExperienceForm({ ...experienceForm, place: e.target.value })}
                         required
                       />
                     </div>
@@ -499,8 +661,8 @@ const Admin = () => {
                         type="text" 
                         id="exp-year"
                         placeholder="e.g. 2024 - Present, 2023..."
-                        value={newExperience.year}
-                        onChange={(e) => setNewExperience({ ...newExperience, year: e.target.value })}
+                        value={experienceForm.year}
+                        onChange={(e) => setExperienceForm({ ...experienceForm, year: e.target.value })}
                         required
                       />
                     </div>
@@ -510,14 +672,21 @@ const Admin = () => {
                     <textarea 
                       id="exp-desc"
                       placeholder="Describe your responsibilities or contributions here..."
-                      value={newExperience.description}
-                      onChange={(e) => setNewExperience({ ...newExperience, description: e.target.value })}
+                      value={experienceForm.description}
+                      onChange={(e) => setExperienceForm({ ...experienceForm, description: e.target.value })}
                       required
                     ></textarea>
                   </div>
-                  <button type="submit" className="btn-primary" style={{ marginTop: "10px" }}>
-                    <FaPlus /> Add Experience
-                  </button>
+                  <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
+                    <button type="submit" className="btn-primary">
+                      {editingExperienceId ? <><FaSave /> Save Changes</> : <><FaPlus /> Add Experience</>}
+                    </button>
+                    {editingExperienceId && (
+                      <button type="button" onClick={resetExperienceForm} className="btn-secondary">
+                        <FaTimes /> Cancel
+                      </button>
+                    )}
+                  </div>
                 </form>
 
                 <div className="admin-list-section">
@@ -532,9 +701,14 @@ const Admin = () => {
                             <h4>{exp.title}</h4>
                             <p style={{ color: "var(--text-muted)", fontSize: "0.8rem" }}>{exp.place} ({exp.year})</p>
                           </div>
-                          <button onClick={() => deleteExperience(exp.id)} className="btn-danger">
-                            <FaTrash /> Delete
-                          </button>
+                          <div className="admin-table-actions">
+                            <button onClick={() => startEditExperience(exp)} className="btn-secondary" style={{ padding: "8px 16px", fontSize: "0.85rem" }}>
+                              <FaEdit /> Edit
+                            </button>
+                            <button onClick={() => deleteExperience(exp.id)} className="btn-danger">
+                              <FaTrash /> Delete
+                            </button>
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -549,15 +723,20 @@ const Admin = () => {
                 <div className="admin-content-header">
                   <h2>Manage Certificates</h2>
                 </div>
-                <form onSubmit={handleAddCertificate} className="admin-form">
+                <form onSubmit={handleCertificateSubmit} className="admin-form">
+                  {editingCertificateId && (
+                    <div className="error-message" style={{ background: "rgba(244, 63, 94, 0.1)", borderColor: "rgba(244, 63, 94, 0.2)", color: "var(--color-accent)" }}>
+                      Editing certificate — make changes and click Save Changes, or Cancel to discard.
+                    </div>
+                  )}
                   <div className="form-group">
                     <label htmlFor="cert-title">Certificate Name</label>
                     <input 
                       type="text" 
                       id="cert-title"
                       placeholder="Certificate title or achievement..."
-                      value={newCertificate.title}
-                      onChange={(e) => setNewCertificate({ ...newCertificate, title: e.target.value })}
+                      value={certificateForm.title}
+                      onChange={(e) => setCertificateForm({ ...certificateForm, title: e.target.value })}
                       required
                     />
                   </div>
@@ -568,8 +747,8 @@ const Admin = () => {
                         type="text" 
                         id="cert-issuer"
                         placeholder="e.g. Coursera, Google, Dicoding..."
-                        value={newCertificate.issuer}
-                        onChange={(e) => setNewCertificate({ ...newCertificate, issuer: e.target.value })}
+                        value={certificateForm.issuer}
+                        onChange={(e) => setCertificateForm({ ...certificateForm, issuer: e.target.value })}
                         required
                       />
                     </div>
@@ -579,8 +758,8 @@ const Admin = () => {
                         type="text" 
                         id="cert-year"
                         placeholder="e.g. 2024"
-                        value={newCertificate.year}
-                        onChange={(e) => setNewCertificate({ ...newCertificate, year: e.target.value })}
+                        value={certificateForm.year}
+                        onChange={(e) => setCertificateForm({ ...certificateForm, year: e.target.value })}
                         required
                       />
                     </div>
@@ -591,13 +770,20 @@ const Admin = () => {
                       type="text" 
                       id="cert-link"
                       placeholder="https://coursera.org/verify/..."
-                      value={newCertificate.link}
-                      onChange={(e) => setNewCertificate({ ...newCertificate, link: e.target.value })}
+                      value={certificateForm.link}
+                      onChange={(e) => setCertificateForm({ ...certificateForm, link: e.target.value })}
                     />
                   </div>
-                  <button type="submit" className="btn-primary" style={{ marginTop: "10px" }}>
-                    <FaPlus /> Add Certificate
-                  </button>
+                  <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
+                    <button type="submit" className="btn-primary">
+                      {editingCertificateId ? <><FaSave /> Save Changes</> : <><FaPlus /> Add Certificate</>}
+                    </button>
+                    {editingCertificateId && (
+                      <button type="button" onClick={resetCertificateForm} className="btn-secondary">
+                        <FaTimes /> Cancel
+                      </button>
+                    )}
+                  </div>
                 </form>
 
                 <div className="admin-list-section">
@@ -612,9 +798,14 @@ const Admin = () => {
                             <h4>{cert.title}</h4>
                             <p style={{ color: "var(--text-muted)", fontSize: "0.8rem" }}>Issuer: {cert.issuer} ({cert.year})</p>
                           </div>
-                          <button onClick={() => deleteCertificate(cert.id)} className="btn-danger">
-                            <FaTrash /> Delete
-                          </button>
+                          <div className="admin-table-actions">
+                            <button onClick={() => startEditCertificate(cert)} className="btn-secondary" style={{ padding: "8px 16px", fontSize: "0.85rem" }}>
+                              <FaEdit /> Edit
+                            </button>
+                            <button onClick={() => deleteCertificate(cert.id)} className="btn-danger">
+                              <FaTrash /> Delete
+                            </button>
+                          </div>
                         </div>
                       ))}
                     </div>

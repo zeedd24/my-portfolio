@@ -5,7 +5,12 @@ const portfolioData = {
     name: "AHMAD ZIDANE",
     role: "Informatics Engineering Student",
     email: "ahmad.zidane@gmail.com",
-    bio: "Informatics Engineering student focusing on Web Development, Networking, and AI."
+    phone: "+62 812-3456-7890",
+    location: "Medan, Indonesia",
+    bio: "Informatics Engineering student focusing on Web Development, Networking, and AI.",
+    github: "https://github.com",
+    linkedin: "https://linkedin.com",
+    instagram: "https://instagram.com"
   },
 
   skills: [],

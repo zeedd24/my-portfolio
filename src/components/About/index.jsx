@@ -33,15 +33,17 @@ const About = () => {
   return (
     <section id="about" className="section">
       <div className="container">
-        <motion.h2 
-          className="section-title"
-          initial={{ opacity: 0, y: -20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.8 }}
-          transition={{ duration: 0.6 }}
-        >
-          About Me
-        </motion.h2>
+        <div className="section-header">
+          <motion.h2 
+            className="section-title"
+            initial={{ opacity: 0, y: -20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.8 }}
+            transition={{ duration: 0.6 }}
+          >
+            About Me
+          </motion.h2>
+        </div>
         <motion.div 
           className="about-grid"
           initial={{ opacity: 0, y: 40 }}
@@ -87,7 +89,7 @@ const About = () => {
                 <div style={{ display: "flex", alignItems: "center", gap: "8px", color: "var(--color-accent)", marginBottom: "5px" }}>
                   <FaMapMarkerAlt /> <h5>Location</h5>
                 </div>
-                <p>Indonesia</p>
+                <p>{profile.location || "Indonesia"}</p>
               </motion.div>
             </motion.div>
           </div>

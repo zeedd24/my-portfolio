@@ -1,30 +1,12 @@
 import { useContext } from "react"
 import { motion } from "framer-motion"
 import PortfolioContext from "../../context/PortfolioContext"
-import { 
-  FaReact, FaHtml5, FaCss3Alt, FaJs, FaNodeJs, FaPython, FaGitAlt, 
-  FaDatabase, FaServer, FaCode, FaLaptopCode, FaGlobe 
-} from "react-icons/fa"
-
-const getSkillIcon = (name = "") => {
-  const lowercase = name.toLowerCase()
-  if (lowercase.includes("react")) return <FaReact />
-  if (lowercase.includes("html")) return <FaHtml5 />
-  if (lowercase.includes("css")) return <FaCss3Alt />
-  if (lowercase.includes("javascript") || lowercase.includes("js")) return <FaJs />
-  if (lowercase.includes("node")) return <FaNodeJs />
-  if (lowercase.includes("python")) return <FaPython />
-  if (lowercase.includes("git")) return <FaGitAlt />
-  if (lowercase.includes("database") || lowercase.includes("sql") || lowercase.includes("mongo")) return <FaDatabase />
-  if (lowercase.includes("server") || lowercase.includes("network") || lowercase.includes("cisco")) return <FaServer />
-  if (lowercase.includes("web")) return <FaGlobe />
-  if (lowercase.includes("code") || lowercase.includes("c++") || lowercase.includes("java")) return <FaLaptopCode />
-  return <FaCode />
-}
+import { resolveSelectedSkills } from "../../data/skillCatalog"
+import SkillIcon from "./SkillIcon"
 
 const Skills = () => {
   const { data } = useContext(PortfolioContext)
-  const { skills = [] } = data
+  const selectedSkills = resolveSelectedSkills(data.skills)
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -51,20 +33,22 @@ const Skills = () => {
   }
 
   return (
-    <section id="skills" className="section">
+    <section id="skills" className="section section-glow">
       <div className="container">
-        <motion.h2 
-          className="section-title"
-          initial={{ opacity: 0, y: -20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.8 }}
-          transition={{ duration: 0.6 }}
-        >
-          Skills &amp; Expertise
-        </motion.h2>
-        {skills.length === 0 ? (
+        <div className="section-header">
+          <motion.h2 
+            className="section-title"
+            initial={{ opacity: 0, y: -20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.8 }}
+            transition={{ duration: 0.6 }}
+          >
+            Skills &amp; Expertise
+          </motion.h2>
+        </div>
+        {selectedSkills.length === 0 ? (
           <div className="glass-card" style={{ padding: "40px", textAlign: "center" }}>
-            <p>No skills added yet. Please log in to the Admin Dashboard to add your skills.</p>
+            <p>No skills added yet. Please log in to the Admin Dashboard to select your skills.</p>
           </div>
         ) : (
           <motion.div 
@@ -74,7 +58,7 @@ const Skills = () => {
             whileInView="visible"
             viewport={{ once: true, amount: 0.15 }}
           >
-            {skills.map((skill) => (
+            {selectedSkills.map((skill) => (
               <motion.div 
                 key={skill.id} 
                 className="glass-card skill-card"
@@ -82,7 +66,7 @@ const Skills = () => {
                 whileHover={{ y: -5, scale: 1.02, transition: { duration: 0.2 } }}
               >
                 <div className="skill-icon-box">
-                  {getSkillIcon(skill.name)}
+                  <SkillIcon skillId={skill.id} size="2rem" />
                 </div>
                 <h4>{skill.name}</h4>
               </motion.div>

@@ -33,17 +33,19 @@ const Projects = () => {
   }
 
   return (
-    <section id="projects" className="section">
+    <section id="projects" className="section section-glow">
       <div className="container">
-        <motion.h2 
-          className="section-title"
-          initial={{ opacity: 0, y: -20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.8 }}
-          transition={{ duration: 0.6 }}
-        >
-          My Projects
-        </motion.h2>
+        <div className="section-header">
+          <motion.h2 
+            className="section-title"
+            initial={{ opacity: 0, y: -20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.8 }}
+            transition={{ duration: 0.6 }}
+          >
+            My Projects
+          </motion.h2>
+        </div>
         {projects.length === 0 ? (
           <div className="glass-card" style={{ padding: "40px", textAlign: "center" }}>
             <p>No projects added yet. Please log in to the Admin Dashboard to add your projects.</p>

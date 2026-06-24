@@ -59,31 +59,47 @@ const Experience = () => {
   }
 
   return (
-    <section id="experience" className="section">
+    <section id="experience" className="section section-glow">
       <div className="container">
+        <div className="section-header">
+          <motion.h2
+            className="section-title"
+            initial={{ opacity: 0, y: -20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            Experience &amp; Certificates
+          </motion.h2>
+        </div>
+
         <div className="timeline-section-grid">
-          
-          {/* Experience Timeline */}
+
           <div>
-            <motion.h2 
-              className="section-title" 
-              style={{ left: "auto", transform: "none", display: "flex", alignItems: "center", gap: "10px", fontSize: "2rem" }}
-              initial={{ opacity: 0, y: -20 }}
-              whileInView={{ opacity: 1, y: 0 }}
+            <motion.h3
+              className="subsection-title"
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
+              transition={{ duration: 0.5 }}
             >
-              <FaBriefcase style={{ color: "var(--color-primary)", fontSize: "1.8rem" }} /> Experience
-            </motion.h2>
-            
+              <FaBriefcase style={{ color: "var(--color-primary)", WebkitTextFillColor: "initial" }} /> Experience
+            </motion.h3>
+
             {experiences.length === 0 ? (
-              <div className="glass-card" style={{ padding: "30px", marginTop: "20px" }}>
+              <motion.div
+                className="glass-card"
+                style={{ padding: "30px" }}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5 }}
+              >
                 <p>No experiences added yet. Please log in to the Admin Dashboard to add experience history.</p>
-              </div>
+              </motion.div>
             ) : (
-              <motion.div 
-                className="timeline" 
-                style={{ marginTop: "30px" }}
+              <motion.div
+                className="timeline"
                 variants={listVariants}
                 initial="hidden"
                 whileInView="visible"
@@ -92,49 +108,57 @@ const Experience = () => {
                 {experiences.map((exp) => (
                   <motion.div key={exp.id} className="timeline-item" variants={itemLeftVariants}>
                     <motion.div className="timeline-dot" variants={dotVariants}></motion.div>
-                    <div className="timeline-content glass-card" style={{ padding: "20px" }}>
+                    <motion.div
+                      className="timeline-content glass-card"
+                      style={{ padding: "20px" }}
+                      whileHover={{ x: 4, transition: { duration: 0.2 } }}
+                    >
                       <div className="timeline-header">
                         <h3>{exp.title}</h3>
                         <span className="timeline-year">{exp.year}</span>
                       </div>
                       <div className="timeline-place">{exp.place}</div>
                       <p style={{ fontSize: "0.9rem" }}>{exp.description}</p>
-                    </div>
+                    </motion.div>
                   </motion.div>
                 ))}
               </motion.div>
             )}
           </div>
 
-          {/* Certificates List */}
           <div>
-            <motion.h2 
-              className="section-title" 
-              style={{ left: "auto", transform: "none", display: "flex", alignItems: "center", gap: "10px", fontSize: "2rem" }}
-              initial={{ opacity: 0, y: -20 }}
-              whileInView={{ opacity: 1, y: 0 }}
+            <motion.h3
+              className="subsection-title"
+              initial={{ opacity: 0, x: 20 }}
+              whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
+              transition={{ duration: 0.5 }}
             >
-              <FaAward style={{ color: "var(--color-accent)", fontSize: "1.8rem" }} /> Certificates
-            </motion.h2>
+              <FaAward style={{ color: "var(--color-accent)", WebkitTextFillColor: "initial" }} /> Certificates
+            </motion.h3>
 
             {certificates.length === 0 ? (
-              <div className="glass-card" style={{ padding: "30px", marginTop: "20px" }}>
+              <motion.div
+                className="glass-card"
+                style={{ padding: "30px" }}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.1 }}
+              >
                 <p>No certificates added yet. Please log in to the Admin Dashboard to add certificates.</p>
-              </div>
+              </motion.div>
             ) : (
-              <motion.div 
-                className="cert-list" 
-                style={{ marginTop: "30px" }}
+              <motion.div
+                className="cert-list"
                 variants={listVariants}
                 initial="hidden"
                 whileInView="visible"
                 viewport={{ once: true, amount: 0.15 }}
               >
                 {certificates.map((cert) => (
-                  <motion.div 
-                    key={cert.id} 
+                  <motion.div
+                    key={cert.id}
                     className="glass-card cert-card"
                     variants={itemRightVariants}
                     whileHover={{ x: 5, scale: 1.01, transition: { duration: 0.2 } }}

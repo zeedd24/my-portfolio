@@ -1,12 +1,18 @@
 import { useEffect, useState } from "react"
 import PortfolioContext from "./PortfolioContext"
 import portfolioData from "../data/portfolio"
+import { migrateSkills } from "../data/skillCatalog"
 import { getData, saveData } from "../utils/storage"
 
 const PortfolioProvider = ({ children }) => {
   const [data, setData] = useState(() => {
     const storedData = getData()
-    return storedData || portfolioData
+    const initialData = storedData || portfolioData
+
+    return {
+      ...initialData,
+      skills: migrateSkills(initialData.skills),
+    }
   })
 
   const [isLoggedIn, setIsLoggedIn] = useState(() => {
@@ -42,23 +48,18 @@ const PortfolioProvider = ({ children }) => {
     }))
   }
 
-  const addSkill = (skillName) => {
-    const newSkill = {
-      id: Date.now(),
-      name: skillName,
-    }
+  const toggleSkill = (skillId) => {
+    setData((prev) => {
+      const currentSkills = migrateSkills(prev.skills)
+      const isSelected = currentSkills.includes(skillId)
 
-    setData((prev) => ({
-      ...prev,
-      skills: [...(prev.skills || []), newSkill],
-    }))
-  }
-
-  const deleteSkill = (id) => {
-    setData((prev) => ({
-      ...prev,
-      skills: (prev.skills || []).filter((skill) => skill.id !== id),
-    }))
+      return {
+        ...prev,
+        skills: isSelected
+          ? currentSkills.filter((id) => id !== skillId)
+          : [...currentSkills, skillId],
+      }
+    })
   }
 
   const addProject = (project) => {
@@ -77,6 +78,15 @@ const PortfolioProvider = ({ children }) => {
     setData((prev) => ({
       ...prev,
       projects: (prev.projects || []).filter((project) => project.id !== id),
+    }))
+  }
+
+  const updateProject = (id, project) => {
+    setData((prev) => ({
+      ...prev,
+      projects: (prev.projects || []).map((item) =>
+        item.id === id ? { ...item, ...project } : item
+      ),
     }))
   }
 
@@ -99,6 +109,15 @@ const PortfolioProvider = ({ children }) => {
     }))
   }
 
+  const updateExperience = (id, experience) => {
+    setData((prev) => ({
+      ...prev,
+      experiences: (prev.experiences || []).map((item) =>
+        item.id === id ? { ...item, ...experience } : item
+      ),
+    }))
+  }
+
   const addCertificate = (certificate) => {
     const newCertificate = {
       id: Date.now(),
@@ -118,6 +137,15 @@ const PortfolioProvider = ({ children }) => {
     }))
   }
 
+  const updateCertificate = (id, certificate) => {
+    setData((prev) => ({
+      ...prev,
+      certificates: (prev.certificates || []).map((item) =>
+        item.id === id ? { ...item, ...certificate } : item
+      ),
+    }))
+  }
+
   return (
     <PortfolioContext.Provider
       value={{
@@ -126,14 +154,16 @@ const PortfolioProvider = ({ children }) => {
         login,
         logout,
         updateProfile,
-        addSkill,
-        deleteSkill,
+        toggleSkill,
         addProject,
         deleteProject,
+        updateProject,
         addExperience,
         deleteExperience,
+        updateExperience,
         addCertificate,
         deleteCertificate,
+        updateCertificate,
       }}
     >
       {children}
@@ -141,4 +171,4 @@ const PortfolioProvider = ({ children }) => {
   )
 }
 
-export default PortfolioProvider
+export default PortfolioProvider
