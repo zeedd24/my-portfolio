@@ -80,6 +80,12 @@ const CardSwap = ({
 
   const childArr = useMemo(() => Children.toArray(children), [children]);
 
+  const stackDepth = Math.max(childArr.length - 1, 0);
+  const stagePadTop = stackDepth * verticalDistance + 28;
+  const stagePadRight = stackDepth * cardDistance + 24;
+  const stagePadBottom = Math.max(72, Math.round(height * 0.35));
+  const dropDistance = Math.min(Math.round(height * 1.15), 420);
+
   const refs = useRef([]);
   if (refs.current.length !== childArr.length) {
     refs.current = Array.from(
@@ -108,7 +114,7 @@ const CardSwap = ({
     });
     tlRef.current = tl;
 
-    tl.to(elFront, { y: '+=550', duration: config.durDrop, ease: config.ease });
+    tl.to(elFront, { y: `+=${dropDistance}`, duration: config.durDrop, ease: config.ease });
 
     tl.addLabel('promote', `-=${config.durDrop * config.promoteOverlap}`);
     rest.forEach((idx, i) => {
@@ -153,7 +159,7 @@ const CardSwap = ({
 
     /* 1. Slide the back card in from below */
     const frontSlot = makeSlot(0, cardDistance, verticalDistance, refs.current.length);
-    gsap.set(elLast, { y: '+=550', zIndex: refs.current.length });
+    gsap.set(elLast, { y: `+=${dropDistance}`, zIndex: refs.current.length });
     tl.to(elLast, {
       x: frontSlot.x,
       y: frontSlot.y,
@@ -255,8 +261,18 @@ const CardSwap = ({
 
   return (
     <div className="card-swap-root">
-      <div ref={container} className="card-swap-container" style={{ width, height }}>
-        {rendered}
+      <div
+        className="card-swap-stage"
+        style={{
+          paddingTop: stagePadTop,
+          paddingRight: stagePadRight,
+          paddingBottom: stagePadBottom,
+          paddingLeft: 16,
+        }}
+      >
+        <div ref={container} className="card-swap-container" style={{ width, height }}>
+          {rendered}
+        </div>
       </div>
 
       {showNav && childArr.length > 1 && (
