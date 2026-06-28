@@ -68,6 +68,13 @@ body {
   background: #ff4d6a;
 }
 
+@media (max-width: 768px) {
+  ::-webkit-scrollbar {
+    width: 0px;
+    background: transparent;
+  }
+}
+
 /* Typography */
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading);
@@ -2420,11 +2427,17 @@ textarea {
 @media (max-width: 768px) {
   html {
     overflow-x: hidden;
+    scrollbar-width: none; /* Firefox */
+  }
+
+  html::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Edge */
   }
 
   body {
     overflow-x: hidden;
     max-width: 100vw;
+    -ms-overflow-style: none; /* IE */
   }
 
   /* Prevent ANY element from causing horizontal overflow */
@@ -2547,6 +2560,70 @@ textarea {
     width: 100%;
     order: 1;
     overflow: hidden;
+  }
+
+  /* Kill heavy continuous animations on mobile */
+  .glow-blob {
+    animation: none !important;
+  }
+
+  .contact-card::before {
+    animation: none !important;
+    background: var(--color-primary) !important;
+    opacity: 0.6;
+  }
+
+  .timeline-item:hover .timeline-dot {
+    animation: none !important;
+  }
+
+  /* Reduce backdrop-filter blur cost on mobile */
+  .glass-card {
+    backdrop-filter: blur(4px) !important;
+    -webkit-backdrop-filter: blur(4px) !important;
+  }
+
+  .navbar {
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
+  }
+
+  /* Use CSS scroll hint for smoother native scroll */
+  html {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Promote sections to own layer to reduce repaint */
+  .section {
+    will-change: auto;
+    transform: translateZ(0);
+  }
+
+  /* Ensure touch scroll not blocked by canvas/WebGL elements */
+  canvas {
+    touch-action: pan-y !important;
+    pointer-events: none !important;
+  }
+
+  .floating-lines-container {
+    pointer-events: none !important;
+  }
+
+  /* Static photo replacement for Lanyard on mobile */
+  .hero-photo-mobile {
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid rgba(244, 63, 94, 0.4);
+    box-shadow: 0 0 30px rgba(244, 63, 94, 0.25);
+    margin: 0 auto;
+  }
+
+  .hero-photo-mobile img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 
   /* About */

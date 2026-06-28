@@ -114,7 +114,7 @@ const Skills = () => {
                 initial="hidden"
                 animate="visible"
                 exit={{ opacity: 0 }}
-                viewport={{ once: false, amount: 0.1 }}
+                viewport={{ once: true, amount: 0.1 }}
               >
                 {filteredSkills.map(skill => (
                   <motion.div
