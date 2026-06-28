@@ -5,6 +5,7 @@ import {
   FaUser, FaEnvelope, FaGraduationCap, FaMapMarkerAlt,
   FaCode, FaFolderOpen, FaCertificate, FaHeart
 } from "react-icons/fa"
+import DownloadCvButton from "../DownloadCvButton"
 
 /* ---- Terminal tab content ---- */
 const TERMINAL_TABS = [
@@ -231,6 +232,10 @@ const About = () => {
               <p>
                 {profile?.bio || "Informatics Engineering student focusing on Web Development, Networking, and AI."}
               </p>
+
+              <div style={{ marginBottom: "20px" }}>
+                <DownloadCvButton style={{ cursor: "pointer", display: "inline-flex" }} />
+              </div>
 
               {/* Info grid */}
               <motion.div

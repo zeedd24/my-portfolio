@@ -6,9 +6,9 @@ import Footer from "../components/Footer"
 import { 
   FaUser, FaTools, FaFolderOpen, FaBriefcase, FaAward, 
   FaPlus, FaTrash, FaSave, FaSignOutAlt, FaUpload, FaSpinner, FaImage, FaEdit, FaTimes,
-  FaLock, FaEye, FaEyeSlash
+  FaLock, FaEye, FaEyeSlash, FaFilePdf
 } from "react-icons/fa"
-import { uploadPhoto } from "../utils/supabase"
+import { uploadPhoto, uploadCv } from "../utils/supabase"
 import { SKILL_CATEGORIES, getSkillsByCategory, resolveSelectedSkills, migrateSkills } from "../data/skillCatalog"
 import SkillIcon from "../components/Skills/SkillIcon"
 
@@ -45,11 +45,15 @@ const Admin = () => {
     photoUrl: data.profile?.photoUrl || "",
     github: data.profile?.github || "",
     linkedin: data.profile?.linkedin || "",
-    instagram: data.profile?.instagram || ""
+    instagram: data.profile?.instagram || "",
+    cvUrl: data.profile?.cvUrl || "",
+    cvFileName: data.profile?.cvFileName || ""
   })
   const [profileSavedMsg, setProfileSavedMsg] = useState(false)
   const [profileUploading, setProfileUploading] = useState(false)
   const [profileError, setProfileError] = useState("")
+  const [cvUploading, setCvUploading] = useState(false)
+  const [cvError, setCvError] = useState("")
 
   // Project
   const emptyProject = { title: "", description: "", tech: "", link: "", imageUrl: "" }
@@ -96,6 +100,32 @@ const Admin = () => {
     } finally {
       setProfileUploading(false)
     }
+  }
+
+  const handleCvUpload = async (e) => {
+    const file = e.target.files[0]
+    if (!file) return
+
+    try {
+      setCvUploading(true)
+      setCvError("")
+      const publicUrl = await uploadCv(file)
+      setProfileForm(prev => ({
+        ...prev,
+        cvUrl: publicUrl,
+        cvFileName: file.name,
+      }))
+    } catch (err) {
+      console.error(err)
+      setCvError(err.message || "Failed to upload CV")
+    } finally {
+      setCvUploading(false)
+      e.target.value = ""
+    }
+  }
+
+  const handleRemoveCv = () => {
+    setProfileForm(prev => ({ ...prev, cvUrl: "", cvFileName: "" }))
   }
 
   const handleProjectPhotoUpload = async (e) => {
@@ -343,6 +373,70 @@ const Admin = () => {
                       </div>
                     </div>
                   </div>
+
+                  <div className="form-group" style={{ marginBottom: "25px" }}>
+                    <label>CV / Resume (PDF)</label>
+                    <div className="admin-cv-upload">
+                      <div className="admin-cv-preview">
+                        <FaFilePdf style={{ fontSize: "2rem", color: profileForm.cvUrl ? "var(--color-accent)" : "var(--text-muted)" }} />
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          {profileForm.cvUrl ? (
+                            <>
+                              <p style={{ fontWeight: 600, marginBottom: "4px", wordBreak: "break-word" }}>
+                                {profileForm.cvFileName || "CV.pdf"}
+                              </p>
+                              <a
+                                href={profileForm.cvUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style={{ fontSize: "0.8rem", color: "var(--color-accent)" }}
+                              >
+                                Preview PDF
+                              </a>
+                            </>
+                          ) : (
+                            <p style={{ color: "var(--text-muted)", fontSize: "0.85rem" }}>
+                              No CV uploaded yet. Visitors won't see the download button.
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", marginTop: "12px" }}>
+                        <input
+                          type="file"
+                          accept=".pdf,application/pdf"
+                          id="profile-cv-file"
+                          onChange={handleCvUpload}
+                          style={{ display: "none" }}
+                        />
+                        <label htmlFor="profile-cv-file" className="btn-secondary" style={{ cursor: "pointer", display: "inline-flex", margin: 0, padding: "8px 16px", fontSize: "0.85rem" }}>
+                          {cvUploading ? <><FaSpinner className="spin" /> Uploading...</> : <><FaUpload /> Upload PDF</>}
+                        </label>
+                        {profileForm.cvUrl && (
+                          <button type="button" onClick={handleRemoveCv} className="btn-danger" style={{ padding: "8px 16px", fontSize: "0.85rem" }}>
+                            <FaTrash /> Remove CV
+                          </button>
+                        )}
+                      </div>
+                      {cvError && (
+                        <p style={{ color: "var(--color-danger)", fontSize: "0.8rem", marginTop: "8px" }}>{cvError}</p>
+                      )}
+                      <p style={{ color: "var(--text-muted)", fontSize: "0.75rem", marginTop: "8px" }}>
+                        PDF only, max 5MB. After upload, click <strong>Save Changes</strong> below.
+                      </p>
+                      <div className="form-group" style={{ marginTop: "14px", marginBottom: 0 }}>
+                        <label htmlFor="admin-cv-url">Or paste CV URL directly</label>
+                        <input
+                          type="url"
+                          id="admin-cv-url"
+                          value={profileForm.cvUrl}
+                          onChange={(e) => setProfileForm({ ...profileForm, cvUrl: e.target.value })}
+                          placeholder="https://example.com/my-cv.pdf"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
                   <div className="form-group">
                     <label htmlFor="admin-name">Full Name</label>
                     <input 

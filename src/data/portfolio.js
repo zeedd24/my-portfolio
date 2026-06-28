@@ -10,7 +10,9 @@ const portfolioData = {
     bio: "Informatics Engineering student focusing on Web Development, Networking, and AI.",
     github: "https://github.com",
     linkedin: "https://linkedin.com",
-    instagram: "https://instagram.com"
+    instagram: "https://instagram.com",
+    cvUrl: "",
+    cvFileName: ""
   },
 
   skills: [],

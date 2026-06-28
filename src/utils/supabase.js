@@ -130,3 +130,22 @@ export const uploadPhoto = async (file, bucketName = "portfolio-photos") => {
 
   return publicUrl
 }
+
+/**
+ * Upload a PDF CV to Supabase Storage and return its public URL.
+ */
+export const uploadCv = async (file, bucketName = "portfolio-photos") => {
+  const isPdf =
+    file.type === "application/pdf" ||
+    file.name.toLowerCase().endsWith(".pdf")
+
+  if (!isPdf) {
+    throw new Error("File must be a PDF document.")
+  }
+
+  if (file.size > 5 * 1024 * 1024) {
+    throw new Error("PDF must be smaller than 5MB.")
+  }
+
+  return uploadPhoto(file, bucketName)
+}

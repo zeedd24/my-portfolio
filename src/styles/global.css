@@ -1152,6 +1152,19 @@ textarea {
   color: var(--color-danger);
 }
 
+.admin-cv-upload {
+  padding: 16px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  background: rgba(0, 0, 0, 0.15);
+}
+
+.admin-cv-preview {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
 @media (max-width: 768px) {
   .admin-table-item {
     flex-direction: column;

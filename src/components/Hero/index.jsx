@@ -4,6 +4,7 @@ import { TypeAnimation } from "react-type-animation"
 import PortfolioContext from "../../context/PortfolioContext"
 import { FaArrowRight } from "react-icons/fa"
 import userPhoto from "../../assets/hero.png"
+import DownloadCvButton from "../DownloadCvButton"
 import Lanyard from "../Lanyard/Lanyard"
 import FloatingLines from "../FloatingLines/FloatingLines"
 
@@ -56,6 +57,7 @@ const Hero = () => {
             <ScrollLink to="contact" smooth={true} offset={-70} duration={500} className="btn-primary" style={{ cursor: "pointer" }}>
               Contact Me <FaArrowRight />
             </ScrollLink>
+            <DownloadCvButton style={{ cursor: "pointer" }} />
             <ScrollLink to="projects" smooth={true} offset={-70} duration={500} className="btn-secondary" style={{ cursor: "pointer" }}>
               View Projects
             </ScrollLink>
