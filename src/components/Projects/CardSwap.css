@@ -1,5 +1,5 @@
 /* =============================================
-   CARD SWAP ROOT (wrapper including nav)
+   CARD SWAP ROOT
    ============================================= */
 .card-swap-root {
   display: flex;
@@ -20,14 +20,12 @@
 }
 
 /* =============================================
-   INDIVIDUAL CARD BASE STYLES
+   INDIVIDUAL CARD
    ============================================= */
 .card {
   position: absolute;
   top: 50%;
   left: 50%;
-
-  /* Premium dark glass look */
   border-radius: 20px;
   border: 1px solid rgba(244, 63, 94, 0.22);
   background: rgba(14, 14, 20, 0.88);
@@ -37,17 +35,14 @@
     0 10px 40px rgba(0, 0, 0, 0.55),
     0 0 0 1px rgba(255, 255, 255, 0.03),
     inset 0 1px 0 rgba(255, 255, 255, 0.04);
-
   transform-style: preserve-3d;
   will-change: transform;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
-
   cursor: pointer;
   overflow: hidden;
   display: flex;
   flex-direction: column;
-
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
@@ -82,7 +77,6 @@
   transform: scale(1.07);
 }
 
-/* Gradient fade at bottom of banner */
 .card-banner-overlay {
   position: absolute;
   inset: 0;
@@ -90,7 +84,6 @@
   pointer-events: none;
 }
 
-/* When no image: fill top region with subtle gradient */
 .card:not(:has(.card-banner)) .card-body {
   padding-top: 32px;
 }
@@ -105,7 +98,6 @@
   z-index: 1;
 }
 
-/* Gradient shimmer line at top of body */
 .card-body::before {
   content: '';
   position: absolute;
@@ -141,7 +133,6 @@
   flex-grow: 1;
 }
 
-/* Footer row: tech badges + action hint */
 .card-footer {
   display: flex;
   justify-content: space-between;
@@ -187,36 +178,17 @@
 }
 
 /* =============================================
-   RESPONSIVE
-   ============================================= */
-@media (max-width: 768px) {
-  .card-swap-container {
-    transform: scale(0.82);
-    transform-origin: top center;
-  }
-}
-
-@media (max-width: 480px) {
-  .card-swap-container {
-    transform: scale(0.62);
-    transform-origin: top center;
-  }
-}
-
-/* =============================================
-   NAV BAR  (Prev / Dots / Next)
+   NAV BAR (Prev / Dots / Next)
    ============================================= */
 .card-swap-nav {
   display: flex;
   align-items: center;
   gap: 14px;
   margin-top: 28px;
-  /* vertically below the card stack */
   position: relative;
   z-index: 10;
 }
 
-/* Arrow buttons */
 .cs-nav-btn {
   width: 40px;
   height: 40px;
@@ -249,7 +221,6 @@
   transform: scale(0.93);
 }
 
-/* Dot indicators */
 .cs-nav-dots {
   display: flex;
   align-items: center;
@@ -266,7 +237,6 @@
   transition: background 0.3s, transform 0.3s;
 }
 
-/* first dot = front card = active */
 .cs-nav-dot:first-child {
   background: #ff4d6a;
   transform: scale(1.3);

@@ -1,13 +1,36 @@
-import { useContext, useState } from "react"
+import { useContext, useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import PortfolioContext from "../../context/PortfolioContext"
 import CardSwap, { Card } from "./CardSwap"
 import { FaExternalLinkAlt, FaTimes, FaGlobe, FaCode, FaInfoCircle } from "react-icons/fa"
 
+const useCardSize = () => {
+  const [size, setSize] = useState({ width: 420, height: 320 })
+
+  useEffect(() => {
+    const update = () => {
+      const w = window.innerWidth
+      if (w <= 480) {
+        setSize({ width: Math.min(w - 48, 320), height: 240 })
+      } else if (w <= 768) {
+        setSize({ width: Math.min(w - 48, 380), height: 280 })
+      } else {
+        setSize({ width: 420, height: 320 })
+      }
+    }
+    update()
+    window.addEventListener("resize", update)
+    return () => window.removeEventListener("resize", update)
+  }, [])
+
+  return size
+}
+
 const Projects = () => {
   const { data } = useContext(PortfolioContext)
   const { projects = [] } = data
-  
+  const cardSize = useCardSize()
+
   // Modal detail state
   const [selectedProject, setSelectedProject] = useState(null)
 
@@ -111,8 +134,8 @@ const Projects = () => {
               transition={{ duration: 0.7 }}
             >
               <CardSwap
-                width={420}
-                height={320}
+                width={cardSize.width}
+                height={cardSize.height}
                 cardDistance={30}
                 verticalDistance={25}
                 delay={2000}

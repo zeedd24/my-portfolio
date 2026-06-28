@@ -1222,6 +1222,8 @@ textarea {
   border-radius: var(--radius-full);
   border: 1px solid rgba(244, 63, 94, 0.15);
   background: rgba(244, 63, 94, 0.05);
+  color: var(--text-secondary);
+  font-size: 1.3rem;
   transition: var(--transition-normal);
 }
 
@@ -2190,7 +2192,20 @@ textarea {
   min-height: 520px;
   position: relative;
   overflow: visible;
-  padding: 60px 20px 100px; /* Room for the 3D stack to breathe */
+  padding: 60px 20px 80px;
+}
+
+@media (max-width: 768px) {
+  .projects-swap-wrapper {
+    min-height: unset;
+    padding: 40px 0 60px;
+  }
+}
+
+@media (max-width: 480px) {
+  .projects-swap-wrapper {
+    padding: 30px 0 50px;
+  }
 }
 
 /* --- Project Detail Modal --- */
@@ -2373,3 +2388,5 @@ textarea {
 #projects .glow-blob {
   pointer-events: none;
 }
+
+

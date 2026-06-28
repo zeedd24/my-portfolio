@@ -13,9 +13,9 @@ const Footer = () => {
   }
 
   const socialLinks = [
-    { icon: FaGithub, url: profile.github, label: "GitHub" },
-    { icon: FaLinkedin, url: profile.linkedin, label: "LinkedIn" },
-    { icon: FaInstagram, url: profile.instagram, label: "Instagram" },
+    { icon: FaGithub, url: profile.github || "https://github.com", label: "GitHub" },
+    { icon: FaLinkedin, url: profile.linkedin || "https://linkedin.com", label: "LinkedIn" },
+    { icon: FaInstagram, url: profile.instagram || "https://instagram.com", label: "Instagram" },
   ].filter((link) => link.url)
 
   const containerVariants = {
@@ -82,7 +82,7 @@ const Footer = () => {
         )}
 
         <motion.p className="footer-tagline" variants={itemVariants}>
-          &copy; {new Date().getFullYear()} {profile.name || "AHMAD ZIDANE"}. Created with React &amp; Vite.
+          &copy; {new Date().getFullYear()} {profile.name || "AHMAD ZIDANE"}. 
         </motion.p>
       </motion.div>
     </motion.footer>

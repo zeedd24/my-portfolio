@@ -16,8 +16,8 @@ const TERMINAL_TABS = [
 const TerminalContent = ({ tab, profile }) => {
   const name = profile?.name || "Ahmad Zidane"
   const role = profile?.role || "Informatics Engineering Student"
-  const email = profile?.email || "ahmad.zidane@gmail.com"
-  const location = profile?.location || "Medan, Indonesia"
+  const email = profile?.email || "azidane@student.umrah.ac.id"
+  const location = profile?.location || "Tanjungpinang, Indonesia"
 
   if (tab === "profile") {
     return (
@@ -32,7 +32,7 @@ const TerminalContent = ({ tab, profile }) => {
           [6, <><span className="t-key">&quot;open_to_work&quot;</span><span className="t-bracket">: </span><span className="t-bool">true</span><span className="t-bracket">,</span></>],
           [7, <><span className="t-key">&quot;focus&quot;</span><span className="t-bracket">: [</span></>],
           [8, <>&nbsp;&nbsp;<span className="t-val">&quot;Web Development&quot;</span><span className="t-bracket">,</span></>],
-          [9, <>&nbsp;&nbsp;<span className="t-val">&quot;Networking&quot;</span><span className="t-bracket">,</span></>],
+          [9, <>&nbsp;&nbsp;<span className="t-val">&quot;Frontend Developer&quot;</span><span className="t-bracket">,</span></>],
           [10, <>&nbsp;&nbsp;<span className="t-val">&quot;AI & Machine Learning&quot;</span></>],
           [11, <><span className="t-bracket">],</span></>],
           [null, <><span className="t-bracket">{"}"}</span><span className="terminal-cursor" /></>],
@@ -230,9 +230,6 @@ const About = () => {
               <h3>Who Am I?</h3>
               <p>
                 {profile?.bio || "Informatics Engineering student focusing on Web Development, Networking, and AI."}
-              </p>
-              <p>
-                I'm always excited to learn new technologies, solve complex problems through programming, and build systems that create real impact. I thrive in collaborative environments and love shipping clean, well-crafted code.
               </p>
 
               {/* Info grid */}

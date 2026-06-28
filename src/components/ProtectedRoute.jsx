@@ -6,7 +6,7 @@ const ProtectedRoute = ({ children }) => {
   const { isLoggedIn } = useContext(PortfolioContext)
 
   if (!isLoggedIn) {
-    return <Navigate to="/login" replace />
+    return <Navigate to="/ahmdzdaneee" replace />
   }
 
   return children

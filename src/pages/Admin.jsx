@@ -5,7 +5,8 @@ import Navbar from "../components/Navbar"
 import Footer from "../components/Footer"
 import { 
   FaUser, FaTools, FaFolderOpen, FaBriefcase, FaAward, 
-  FaPlus, FaTrash, FaSave, FaSignOutAlt, FaUpload, FaSpinner, FaImage, FaEdit, FaTimes 
+  FaPlus, FaTrash, FaSave, FaSignOutAlt, FaUpload, FaSpinner, FaImage, FaEdit, FaTimes,
+  FaLock, FaEye, FaEyeSlash
 } from "react-icons/fa"
 import { uploadPhoto } from "../utils/supabase"
 import { SKILL_CATEGORIES, getSkillsByCategory, resolveSelectedSkills, migrateSkills } from "../data/skillCatalog"
@@ -25,6 +26,7 @@ const Admin = () => {
     addCertificate, 
     deleteCertificate,
     updateCertificate,
+    changePassword,
     logout 
   } = useContext(PortfolioContext)
 
@@ -65,6 +67,11 @@ const Admin = () => {
   const emptyCertificate = { title: "", issuer: "", year: "", link: "" }
   const [certificateForm, setCertificateForm] = useState(emptyCertificate)
   const [editingCertificateId, setEditingCertificateId] = useState(null)
+
+  // Security / Change Password
+  const [passwordForm, setPasswordForm] = useState({ current: "", newPass: "", confirm: "" })
+  const [passwordMsg, setPasswordMsg] = useState({ text: "", success: false })
+  const [showPasswords, setShowPasswords] = useState({ current: false, newPass: false, confirm: false })
 
   // --- Submit handlers ---
   const handleProfileSave = (e) => {
@@ -194,6 +201,20 @@ const Admin = () => {
     navigate("/")
   }
 
+  const handleChangePassword = async (e) => {
+    e.preventDefault()
+    if (passwordForm.newPass !== passwordForm.confirm) {
+      setPasswordMsg({ text: "New passwords do not match.", success: false })
+      return
+    }
+    const result = await changePassword(passwordForm.current, passwordForm.newPass)
+    setPasswordMsg({ text: result.message, success: result.success })
+    if (result.success) {
+      setPasswordForm({ current: "", newPass: "", confirm: "" })
+      setTimeout(() => setPasswordMsg({ text: "", success: false }), 4000)
+    }
+  }
+
   useEffect(() => {
     setProjectForm(emptyProject)
     setEditingProjectId(null)
@@ -258,6 +279,12 @@ const Admin = () => {
               className={`admin-tab-btn ${activeTab === "certificates" ? "active" : ""}`}
             >
               <FaAward /> Certificates
+            </button>
+            <button 
+              onClick={() => setActiveTab("security")}
+              className={`admin-tab-btn ${activeTab === "security" ? "active" : ""}`}
+            >
+              <FaLock /> Security
             </button>
           </div>
 
@@ -810,6 +837,88 @@ const Admin = () => {
                       ))}
                     </div>
                   )}
+                </div>
+              </div>
+            )}
+
+            {/* TAB: SECURITY */}
+            {activeTab === "security" && (
+              <div>
+                <div className="admin-content-header">
+                  <h2>Security Settings</h2>
+                </div>
+
+                <div className="glass-card" style={{ padding: "28px", maxWidth: "480px" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "20px" }}>
+                    <div style={{ width: "42px", height: "42px", borderRadius: "var(--radius-md)", background: "var(--primary-gradient)", display: "flex", alignItems: "center", justifyContent: "center", color: "white", fontSize: "1.1rem", flexShrink: 0 }}>
+                      <FaLock />
+                    </div>
+                    <div>
+                      <h3 style={{ fontSize: "1.1rem", marginBottom: "2px" }}>Change Password</h3>
+                      <p style={{ fontSize: "0.82rem", color: "var(--text-muted)", margin: 0 }}>Password tersimpan di browser ini</p>
+                    </div>
+                  </div>
+
+                  {passwordMsg.text && (
+                    <div className="error-message" style={{
+                      background: passwordMsg.success ? "rgba(16, 185, 129, 0.1)" : "rgba(244, 63, 94, 0.1)",
+                      borderColor: passwordMsg.success ? "rgba(16, 185, 129, 0.2)" : "rgba(244, 63, 94, 0.2)",
+                      color: passwordMsg.success ? "var(--color-success)" : "var(--color-danger)"
+                    }}>
+                      {passwordMsg.text}
+                    </div>
+                  )}
+
+                  <form onSubmit={handleChangePassword} className="admin-form">
+                    {[
+                      { id: "current", label: "Current Password", field: "current" },
+                      { id: "newPass", label: "New Password", field: "newPass" },
+                      { id: "confirm", label: "Confirm New Password", field: "confirm" },
+                    ].map(({ id, label, field }) => (
+                      <div className="form-group" key={id}>
+                        <label htmlFor={`pwd-${id}`}>{label}</label>
+                        <div style={{ position: "relative" }}>
+                          <input
+                            type={showPasswords[field] ? "text" : "password"}
+                            id={`pwd-${id}`}
+                            value={passwordForm[field]}
+                            onChange={(e) => setPasswordForm({ ...passwordForm, [field]: e.target.value })}
+                            placeholder={`Enter ${label.toLowerCase()}...`}
+                            required
+                            style={{ paddingRight: "44px" }}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowPasswords(prev => ({ ...prev, [field]: !prev[field] }))}
+                            style={{ position: "absolute", right: "12px", top: "50%", transform: "translateY(-50%)", background: "none", border: "none", color: "var(--text-muted)", cursor: "pointer", display: "flex", alignItems: "center", padding: 0 }}
+                          >
+                            {showPasswords[field] ? <FaEyeSlash /> : <FaEye />}
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                    <button type="submit" className="btn-primary" style={{ marginTop: "10px" }}>
+                      <FaSave /> Update Password
+                    </button>
+                  </form>
+
+                  <div style={{ marginTop: "24px", padding: "16px", borderRadius: "var(--radius-md)", background: "rgba(16, 185, 129, 0.05)", border: "1px solid rgba(16, 185, 129, 0.15)" }}>
+                    <p style={{ fontSize: "0.82rem", color: "var(--text-muted)", margin: 0, lineHeight: 1.6 }}>
+                      ✅ Password tersimpan di Supabase — berlaku di semua perangkat dan tidak hilang meski browser di-clear.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="glass-card" style={{ padding: "28px", maxWidth: "480px", marginTop: "24px" }}>
+                  <h3 style={{ fontSize: "1rem", marginBottom: "12px" }}>Login URL</h3>
+                  <div style={{ display: "flex", alignItems: "center", gap: "10px", padding: "10px 14px", background: "rgba(0,0,0,0.2)", borderRadius: "var(--radius-md)", border: "1px solid var(--border-color)" }}>
+                    <code style={{ fontSize: "0.88rem", color: "var(--color-accent)", flex: 1, wordBreak: "break-all" }}>
+                      {window.location.origin}/manage-2024
+                    </code>
+                  </div>
+                  <p style={{ fontSize: "0.8rem", color: "var(--text-muted)", marginTop: "10px" }}>
+                    Bagikan URL ini hanya kepada diri sendiri. Jangan simpan di tempat yang bisa diakses orang lain.
+                  </p>
                 </div>
               </div>
             )}

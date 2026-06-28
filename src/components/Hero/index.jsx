@@ -39,9 +39,9 @@ const Hero = () => {
                 2000,
                 "Web Developer",
                 2000,
-                "Networking Specialist",
+                "Frontend Developer",
                 2000,
-                "AI Enthusiast",
+                "AI & Machine Learning",
                 2000,
               ]}
               wrapper="span"

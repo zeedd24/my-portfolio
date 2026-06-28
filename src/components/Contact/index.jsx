@@ -10,25 +10,20 @@ const Contact = () => {
   const { data } = useContext(PortfolioContext)
   const { profile } = data
 
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    message: ""
-  })
-  const [success, setSuccess] = useState(false)
+  const [formData, setFormData] = useState({ name: "", email: "", message: "" })
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.id]: e.target.value
-    })
+    setFormData({ ...formData, [e.target.id]: e.target.value })
   }
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    setSuccess(true)
-    setFormData({ name: "", email: "", message: "" })
-    setTimeout(() => setSuccess(false), 5000)
+    const toEmail = profile?.email || "ahmad.zidane@gmail.com"
+    const subject = encodeURIComponent(`Portfolio Contact from ${formData.name}`)
+    const body = encodeURIComponent(
+      `Name: ${formData.name}\nEmail: ${formData.email}\n\nMessage:\n${formData.message}`
+    )
+    window.location.href = `mailto:${toEmail}?subject=${subject}&body=${body}`
   }
 
   const contactItems = [
@@ -45,19 +40,12 @@ const Contact = () => {
 
   const listVariants = {
     hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { staggerChildren: 0.12, delayChildren: 0.2 },
-    },
+    visible: { opacity: 1, transition: { staggerChildren: 0.12, delayChildren: 0.2 } },
   }
 
   const itemVariants = {
     hidden: { opacity: 0, x: -20 },
-    visible: {
-      opacity: 1,
-      x: 0,
-      transition: { type: "spring", damping: 14, stiffness: 90 },
-    },
+    visible: { opacity: 1, x: 0, transition: { type: "spring", damping: 14, stiffness: 90 } },
   }
 
   return (
@@ -88,7 +76,7 @@ const Contact = () => {
         </div>
 
         <div className="contact-grid">
-          {/* Left card: Info & Socials */}
+          {/* Left: Info & Socials */}
           <motion.div
             className="glass-card contact-card"
             initial={{ opacity: 0, x: -40 }}
@@ -97,9 +85,7 @@ const Contact = () => {
             transition={{ type: "spring", damping: 15, stiffness: 85 }}
           >
             <div className="contact-card-header">
-              <div className="contact-card-icon">
-                <FaComments />
-              </div>
+              <div className="contact-card-icon"><FaComments /></div>
               <div>
                 <h3>Let's Connect!</h3>
                 <p className="contact-card-subtitle">Open for opportunities &amp; discussions</p>
@@ -119,9 +105,7 @@ const Contact = () => {
             >
               {contactItems.map(({ icon: Icon, label, value }) => (
                 <motion.div key={label} className="contact-info-item" variants={itemVariants}>
-                  <div className="contact-info-icon">
-                    <Icon />
-                  </div>
+                  <div className="contact-info-icon"><Icon /></div>
                   <div className="contact-info-text">
                     <h4>{label}</h4>
                     <p>{value}</p>
@@ -130,7 +114,6 @@ const Contact = () => {
               ))}
             </motion.div>
 
-            {/* Social profiles row */}
             {socialLinks.length > 0 && (
               <div className="contact-social-row">
                 {socialLinks.map(({ icon: Icon, url, label }) => (
@@ -149,7 +132,7 @@ const Contact = () => {
             )}
           </motion.div>
 
-          {/* Right card: Contact form */}
+          {/* Right: Form */}
           <motion.div
             className="glass-card contact-card"
             initial={{ opacity: 0, x: 40 }}
@@ -158,25 +141,12 @@ const Contact = () => {
             transition={{ type: "spring", damping: 15, stiffness: 85, delay: 0.1 }}
           >
             <div className="contact-card-header">
-              <div className="contact-card-icon">
-                <FaPaperPlane />
-              </div>
+              <div className="contact-card-icon"><FaPaperPlane /></div>
               <div>
                 <h3>Send Message</h3>
-                <p className="contact-card-subtitle">I will reply as soon as possible</p>
+                <p className="contact-card-subtitle">Opens your email app automatically</p>
               </div>
             </div>
-
-            {success && (
-              <motion.div
-                className="contact-success"
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0 }}
-              >
-                Your message has been sent successfully! Thank you for reaching out.
-              </motion.div>
-            )}
 
             <form onSubmit={handleSubmit} className="admin-form">
               <div className="form-group">
@@ -209,7 +179,7 @@ const Contact = () => {
                   value={formData.message}
                   onChange={handleChange}
                   required
-                ></textarea>
+                />
               </div>
               <motion.button
                 type="submit"
