@@ -112,7 +112,7 @@ const Projects = () => {
 
         {projects.length === 0 ? (
           <div className="glass-card" style={{ padding: "40px", textAlign: "center" }}>
-            <p>No projects added yet. Please log in to the Admin Dashboard to add your projects.</p>
+            <p>No projects added yet.</p>
           </div>
         ) : (
           <div className="projects-swap-layout">

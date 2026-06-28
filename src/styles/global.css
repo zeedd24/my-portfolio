@@ -2468,11 +2468,20 @@ textarea {
   .hero-section {
     min-height: auto;
     padding-top: 70px;
-    padding-bottom: 40px;
+    padding-bottom: 48px;
   }
 
   .hero-content {
-    gap: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    text-align: center;
+    padding: 0;
+  }
+
+  .hero-text {
+    width: 100%;
+    order: 2;
   }
 
   .hero-text h4 {
@@ -2484,6 +2493,7 @@ textarea {
     font-size: 2rem;
     line-height: 1.25;
     word-break: break-word;
+    margin-bottom: 10px;
   }
 
   .hero-typing {
@@ -2498,6 +2508,7 @@ textarea {
     margin-bottom: 24px;
     margin-left: auto;
     margin-right: auto;
+    max-width: 100%;
   }
 
   .hero-buttons {
@@ -2505,19 +2516,22 @@ textarea {
     align-items: stretch;
     gap: 10px;
     width: 100%;
-    max-width: 320px;
+    max-width: 300px;
     margin: 0 auto;
   }
 
-  .hero-buttons .btn-primary,
-  .hero-buttons .btn-secondary {
+  .hero-buttons > * {
     width: 100%;
     justify-content: center;
+    text-align: center;
+    box-sizing: border-box;
   }
 
   .hero-visual {
-    height: 260px;
-    order: -1;
+    height: 240px;
+    width: 100%;
+    order: 1;
+    overflow: hidden;
   }
 
   /* About */
@@ -2529,17 +2543,29 @@ textarea {
     font-size: 1.35rem;
   }
 
+  .about-bio-card > div > a,
+  .about-bio-card > div > .btn-secondary {
+    width: 100%;
+    justify-content: center;
+  }
+
   .about-info-grid {
-    grid-template-columns: 1fr;
-    gap: 16px;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
   }
 
   .about-metrics-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
   }
 
   .about-metric-card {
-    padding: 14px 16px;
+    padding: 14px 12px;
+    gap: 10px;
+  }
+
+  .about-metric-value {
+    font-size: 0.9rem;
   }
 
   .dev-terminal {
@@ -2578,11 +2604,18 @@ textarea {
     gap: 6px;
     margin-bottom: 28px;
     justify-content: flex-start;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding-bottom: 4px;
+    scrollbar-width: none;
   }
+
+  .skill-filter-bar::-webkit-scrollbar { display: none; }
 
   .skill-filter-btn {
     padding: 7px 12px;
     font-size: 0.78rem;
+    flex-shrink: 0;
   }
 
   /* Projects */
@@ -2654,10 +2687,14 @@ textarea {
     gap: 36px;
   }
 
+  .timeline {
+    padding-left: 20px;
+  }
+
   .timeline-header {
     flex-direction: column;
     align-items: flex-start;
-    gap: 8px;
+    gap: 6px;
   }
 
   .timeline-content h3 {
@@ -2666,13 +2703,25 @@ textarea {
   }
 
   .cert-card {
-    flex-direction: column;
-    align-items: flex-start;
+    flex-direction: row;
+    align-items: center;
     gap: 12px;
+    padding: 16px;
+  }
+
+  .cert-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .cert-info h4 {
+    font-size: 0.95rem;
+    word-break: break-word;
   }
 
   .cert-link {
-    align-self: flex-end;
+    align-self: center;
+    flex-shrink: 0;
   }
 
   /* Contact */

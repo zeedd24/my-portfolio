@@ -75,7 +75,7 @@ const Skills = () => {
 
         {allSkills.length === 0 ? (
           <div className="glass-card" style={{ padding: "40px", textAlign: "center" }}>
-            <p>No skills added yet. Please log in to the Admin Dashboard to select your skills.</p>
+            <p>No skills added yet.</p>
           </div>
         ) : (
           <>

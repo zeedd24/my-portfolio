@@ -95,7 +95,7 @@ const Experience = () => {
                 viewport={{ once: true }}
                 transition={{ duration: 0.5 }}
               >
-                <p>No experiences added yet. Please log in to the Admin Dashboard to add experience history.</p>
+                <p>No experiences added yet.</p>
               </motion.div>
             ) : (
               <motion.div
@@ -146,7 +146,7 @@ const Experience = () => {
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: 0.1 }}
               >
-                <p>No certificates added yet. Please log in to the Admin Dashboard to add certificates.</p>
+                <p>No certificates added yet.</p>
               </motion.div>
             ) : (
               <motion.div

@@ -12,14 +12,32 @@ const DownloadCvButton = ({ className = "btn-secondary", style = {} }) => {
     profile.cvFileName ||
     `CV-${(profile.name || "Resume").replace(/\s+/g, "-")}.pdf`
 
+  const handleDownload = async (e) => {
+    e.preventDefault()
+    try {
+      const response = await fetch(profile.cvUrl)
+      const blob = await response.blob()
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement("a")
+      a.href = url
+      a.download = fileName
+      document.body.appendChild(a)
+      a.click()
+      a.remove()
+      URL.revokeObjectURL(url)
+    } catch {
+      // Fallback: open in new tab
+      window.open(profile.cvUrl, "_blank", "noopener,noreferrer")
+    }
+  }
+
   return (
     <a
       href={profile.cvUrl}
-      download={fileName}
-      target="_blank"
-      rel="noopener noreferrer"
+      onClick={handleDownload}
       className={className}
-      style={style}
+      style={{ display: "inline-flex", alignItems: "center", gap: "8px", ...style }}
+      aria-label="Download CV"
     >
       Download CV <FaDownload />
     </a>
