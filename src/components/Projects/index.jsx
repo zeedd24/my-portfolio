@@ -4,18 +4,40 @@ import PortfolioContext from "../../context/PortfolioContext"
 import CardSwap, { Card } from "./CardSwap"
 import { FaExternalLinkAlt, FaTimes, FaGlobe, FaCode, FaInfoCircle } from "react-icons/fa"
 
-const useCardSize = () => {
-  const [size, setSize] = useState({ width: 420, height: 320 })
+const useCardSwapConfig = () => {
+  const [config, setConfig] = useState({
+    width: 420,
+    height: 320,
+    cardDistance: 30,
+    verticalDistance: 25,
+  })
 
   useEffect(() => {
     const update = () => {
       const w = window.innerWidth
+      const padding = w <= 480 ? 32 : 48
+
       if (w <= 480) {
-        setSize({ width: Math.min(w - 48, 320), height: 240 })
+        setConfig({
+          width: Math.min(w - padding, 300),
+          height: 220,
+          cardDistance: 14,
+          verticalDistance: 12,
+        })
       } else if (w <= 768) {
-        setSize({ width: Math.min(w - 48, 380), height: 280 })
+        setConfig({
+          width: Math.min(w - padding, 340),
+          height: 260,
+          cardDistance: 18,
+          verticalDistance: 14,
+        })
       } else {
-        setSize({ width: 420, height: 320 })
+        setConfig({
+          width: 420,
+          height: 320,
+          cardDistance: 30,
+          verticalDistance: 25,
+        })
       }
     }
     update()
@@ -23,13 +45,13 @@ const useCardSize = () => {
     return () => window.removeEventListener("resize", update)
   }, [])
 
-  return size
+  return config
 }
 
 const Projects = () => {
   const { data } = useContext(PortfolioContext)
   const { projects = [] } = data
-  const cardSize = useCardSize()
+  const cardConfig = useCardSwapConfig()
 
   // Modal detail state
   const [selectedProject, setSelectedProject] = useState(null)
@@ -61,7 +83,7 @@ const Projects = () => {
   }
 
   return (
-    <section id="projects" className="section section-glow" style={{ overflow: "visible" }}>
+    <section id="projects" className="section section-glow projects-section">
       <div className="glow-blob glow-blob-1" style={{ top: "auto", bottom: "-60px", right: "-60px" }} />
       <div className="glow-blob glow-blob-2" style={{ bottom: "auto", top: "-60px", left: "-60px" }} />
       <div className="dot-grid-bg" />
@@ -134,10 +156,10 @@ const Projects = () => {
               transition={{ duration: 0.7 }}
             >
               <CardSwap
-                width={cardSize.width}
-                height={cardSize.height}
-                cardDistance={30}
-                verticalDistance={25}
+                width={cardConfig.width}
+                height={cardConfig.height}
+                cardDistance={cardConfig.cardDistance}
+                verticalDistance={cardConfig.verticalDistance}
                 delay={2000}
                 pauseOnHover={true}
                 showNav={true}

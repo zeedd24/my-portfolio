@@ -61,7 +61,7 @@ const Hero = () => {
             </ScrollLink>
           </div>
         </div>
-        <div className="hero-visual" style={{ position: 'relative', height: '100%', minHeight: '600px', width: '100%' }}>
+        <div className="hero-visual">
           <Lanyard
             position={[0, 0, 15]}
             gravity={[0, -40, 0]}
